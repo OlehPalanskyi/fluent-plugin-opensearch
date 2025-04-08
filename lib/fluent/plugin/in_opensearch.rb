@@ -345,7 +345,7 @@ module Fluent::Plugin
         @retry.step
         if error.message.include?('EOFError (EOFError)')
           log.error("Restart plugin because hit error #{error.message}")
-          exit(1)
+          start
         end
         #Raise error if the retry limit has been reached
         raise "Hit limit for retries. retry_times: #{@retry.steps}, error: #{error.message}" if @retry.limit?
@@ -370,7 +370,7 @@ module Fluent::Plugin
           run_slice(slice_id)
         end
       end
-    rescue Faraday::ConnectionFailed, Faraday::TimeoutError, OpenSearch::Transport::Transport::Error => error
+    rescue => error
       update_retry_state(error)
       retry
     end
